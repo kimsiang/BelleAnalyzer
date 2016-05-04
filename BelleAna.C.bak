@@ -59,10 +59,16 @@ void BelleAna::initialize(TTree *fChain){
         // create array of TH1D
         if(strcmp(leaf->GetTypeName(), "Double_t") == 0 || strcmp(leaf->GetTypeName(), "Long64_t") == 0) {
             histD_[nLeavesD_] = new TH1D(leaf->GetName(),leaf->GetName(),1000,0,0.01); 
-            histD_[nLeavesD_]->SetCanExtend(kTRUE);
+        //   histD_[nLeavesD_]->SetCanExtend(kTRUE);
             nLeavesD_++;
         }
     }
+
+    // initialize vectors of min and max values for each hist
+    histI_min_ = new vector<UInt_t>(nLeavesI_);
+    histI_max_ = new vector<UInt_t>(nLeavesI_);
+    histD_min_ = new vector<ULong_t>(nLeavesD_);
+    histD_max_ = new vector<ULong_t>(nLeavesD_);
 
     // initialize private event counter
     nEvent_ = 0;
@@ -83,6 +89,20 @@ void BelleAna::execute(){
 void BelleAna::finalize(){
 
     //  cout << "finalize()" << endl;
+
+
+    // optimize the TH1I histograms to fit all the values
+    for(int i=0;i<nLeavesI_;i++){ 
+ //       histI_[i]->ExtendAxis((*histI_min_)[i],histI_[i]->GetXaxis()); 
+  //      histI_[i]->ExtendAxis((*histI_max_)[i],histI_[i]->GetXaxis()); 
+    }
+
+    // optimize the TH1D histograms to fit all the values
+    for(int i=0;i<nLeavesD_;i++){ 
+ //       histD_[i]->ExtendAxis((*histD_min_)[i],histD_[i]->GetXaxis()); 
+//     histD_[i]->ExtendAxis((*histD_max_)[i],histD_[i]->GetXaxis()); 
+    }
+
     mFile_->Write ();
     mFile_->Close ();
 
@@ -94,7 +114,8 @@ void BelleAna::clear(){
 
 void BelleAna::tLeafToHist(){
 
-    //  cout << "tLeafToHist()" << endl;
+    //   cout << "tLeafToHist()" << endl;
+
     int iLeavesI = 0;
     int iLeavesD = 0;
 
@@ -104,12 +125,24 @@ void BelleAna::tLeafToHist(){
         TLeaf *leaf = (TLeaf*)leaves->UncheckedAt(i);
 
         if(strcmp(leaf->GetTypeName(), "Int_t") == 0) {
-            histI_[iLeavesI]->Fill(leaf->GetValue(0)); 
+            Int_t valueI = leaf->GetValue(0);
+
+            // store min and max values for range optimization in finalize function
+            if(valueI > (*histI_max_)[iLeavesI]) (*histI_max_)[iLeavesI] = valueI;
+            if(valueI < (*histI_min_)[iLeavesI]) (*histI_min_)[iLeavesI] = valueI;
+
+            histI_[iLeavesI]->Fill(valueI); 
             iLeavesI++;
         }
 
         if(strcmp(leaf->GetTypeName(), "Double_t") == 0 || strcmp(leaf->GetTypeName(), "Long64_t") == 0) {
-            histD_[iLeavesD]->Fill(leaf->GetValue(0)); 
+            ULong_t valueL = leaf->GetValue(0);
+
+            // store min and max values for range optimization in finalize function
+            if(valueL > (*histI_max_)[iLeavesD]) (*histD_max_)[iLeavesD] = valueL;
+            if(valueL < (*histI_min_)[iLeavesD]) (*histD_min_)[iLeavesD] = valueL;
+
+            histD_[iLeavesD]->Fill(valueL); 
             iLeavesD++;
         }
 

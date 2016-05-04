@@ -6,7 +6,6 @@
 #include "TH1D.h"
 #include "TLeaf.h"
 #include "TBranch.h"
-#include "TH1D.h"
 #include "TH1I.h"
 #include "TGraph.h"
 #include <iostream>
@@ -18,8 +17,8 @@ class BelleAna : public t1 {
         ~BelleAna() {};
         virtual void Loop();
         void initialize(TTree *fChain);
-        void execute();
         void tLeafToHist();
+        void execute();
         void finalize();
         void clear();
 
@@ -31,9 +30,8 @@ class BelleAna : public t1 {
         int nLeavesD_; 
 
         TObjArray *leaves;
-        TH1I *histI_[300];
-        TH1D *histD_[400];
-
+        TH1I *histI_[100];
+        TH1D *histD_[300];
 
 };
 #endif
