@@ -8,6 +8,6 @@ make
 
 and run it with
 
-./belleana input.script
+./ana input.script
 
-where input.script is filled with paths to the root files you want to analyze.
+where input.script is filled with paths to the root files you want to analyze. Example here is the file exp55_XK.root stored in ../data/ folder
