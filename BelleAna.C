@@ -43,7 +43,7 @@ void BelleAna::initialize(TTree *fChain){
     nLeavesI_=0;
     nLeavesD_=0;
 
-    // get the all branch names and store them
+    // get all the leaf names and store them
     for (int i=0; i<nLeaves_;i++) {
 
         // go through each leaf
